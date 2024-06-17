@@ -34,22 +34,6 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public List<GetTodoResponse> getTodoSearch(Long userId, Sort sort, Integer start,
         Integer limit) {
-//        int page = (start > 0) ? start - 1 : 0;
-//        int size = (limit > 0) ? limit : 30;
-//
-//        Pageable pageable = PageRequest.of(page, size);
-//
-//        Page<Todo> todoPage;
-//        if (sort == Sort.OLDEST) {
-//            todoPage = todoRepository.findByUserIdOrderByIdAsc(userId, pageable);
-//        } else {
-//            todoPage = todoRepository.findByUserIdOrderByIdDesc(userId, pageable);
-//        }
-//
-//        return todoPage.stream()
-//            .map(todo -> new GetTodoResponse(todo.getId(), todo.getContent(), todo.getStatus(),
-//                todo.getCreatedAt()))
-//            .collect(Collectors.toList());
         Pageable pageable = createPageable(start, limit);
         Page<Todo> todoPage = findTodosBySort(userId, sort, pageable);
 
