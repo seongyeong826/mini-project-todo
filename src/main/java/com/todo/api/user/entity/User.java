@@ -49,6 +49,8 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private String refreshToken;
+
     @CreatedDate
     private LocalDateTime createdAt;
 
@@ -67,6 +69,10 @@ public class User {
     public void insertTodo(Todo todo) {
         this.todos.add(todo);
         todo.addUser(this);
+    }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
     }
 
 }

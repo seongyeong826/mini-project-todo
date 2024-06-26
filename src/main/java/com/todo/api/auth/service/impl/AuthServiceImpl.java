@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
@@ -25,6 +26,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public TokenResponse signIn(SignInRequest request) {
         User user = findUserByAccount(request.account());
 
@@ -34,18 +36,24 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = jwtUtil.createAccessToken(userInfo);
         String refreshToken = jwtUtil.createRefreshToken(userInfo);
 
+        user.updateRefreshToken(refreshToken);
+
         return TokenResponse.from(accessToken, refreshToken);
     }
 
     @Override
+    @Transactional
     public TokenResponse refresh(RefreshRequest request) {
-        if (jwtUtil.validateToken(request.refreshToken())) {
-            Long userId = jwtUtil.getUserId(request.refreshToken());
-            User user = findUserById(userId);
+        Long userId = jwtUtil.getUserId(request.refreshToken());
+        User user = findUserById(userId);
 
+        if (jwtUtil.validateToken(request.refreshToken()) && user.getRefreshToken()
+            .equals(request.refreshToken())) {
             CustomUserInfoDto userInfo = CustomUserInfoDto.from(user);
             String accessToken = jwtUtil.createAccessToken(userInfo);
             String refreshToken = jwtUtil.createRefreshToken(userInfo);
+
+            user.updateRefreshToken(refreshToken);
 
             return TokenResponse.from(accessToken, refreshToken);
         }
