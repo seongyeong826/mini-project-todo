@@ -8,6 +8,8 @@ public interface AuthService {
 
     TokenResponse signIn(SignInRequest request);
 
+    void logout(Long userId);
+
     TokenResponse refresh(RefreshRequest request);
 
 }

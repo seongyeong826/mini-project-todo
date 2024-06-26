@@ -75,4 +75,8 @@ public class User {
         this.refreshToken = refreshToken;
     }
 
+    public void clearRefreshToken() {
+        this.refreshToken = null;
+    }
+
 }

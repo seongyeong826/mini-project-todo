@@ -43,6 +43,14 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
+    public void logout(Long userId) {
+        User user = findUserById(userId);
+
+        user.clearRefreshToken();
+    }
+
+    @Override
+    @Transactional
     public TokenResponse refresh(RefreshRequest request) {
         Long userId = jwtUtil.getUserId(request.refreshToken());
         User user = findUserById(userId);
@@ -61,8 +69,8 @@ public class AuthServiceImpl implements AuthService {
         return null;
     }
 
-    private User findUserById(Long id) {
-        return userRepository.findById(id)
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
             .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER));
     }
 
