@@ -19,7 +19,8 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET}
-  expiration_time: 86400000
+  access_token_expiration_time: 3600000
+  refresh_token_expiration_time: 86400000
 
 
 

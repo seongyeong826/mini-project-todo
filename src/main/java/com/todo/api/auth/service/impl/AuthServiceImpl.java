@@ -1,6 +1,7 @@
 package com.todo.api.auth.service.impl;
 
 import com.todo.api.auth.dto.CustomUserInfoDto;
+import com.todo.api.auth.request.RefreshRequest;
 import com.todo.api.auth.request.SignInRequest;
 import com.todo.api.auth.response.TokenResponse;
 import com.todo.api.auth.service.AuthService;
@@ -29,9 +30,32 @@ public class AuthServiceImpl implements AuthService {
 
         validatePassword(request.password(), user.getPassword());
 
-        String accessToken = createAccessToken(user);
+        CustomUserInfoDto userInfo = CustomUserInfoDto.from(user);
+        String accessToken = jwtUtil.createAccessToken(userInfo);
+        String refreshToken = jwtUtil.createRefreshToken(userInfo);
 
-        return TokenResponse.from(accessToken);
+        return TokenResponse.from(accessToken, refreshToken);
+    }
+
+    @Override
+    public TokenResponse refresh(RefreshRequest request) {
+        if (jwtUtil.validateToken(request.refreshToken())) {
+            Long userId = jwtUtil.getUserId(request.refreshToken());
+            User user = findUserById(userId);
+
+            CustomUserInfoDto userInfo = CustomUserInfoDto.from(user);
+            String accessToken = jwtUtil.createAccessToken(userInfo);
+            String refreshToken = jwtUtil.createRefreshToken(userInfo);
+
+            return TokenResponse.from(accessToken, refreshToken);
+        }
+
+        return null;
+    }
+
+    private User findUserById(Long id) {
+        return userRepository.findById(id)
+            .orElseThrow(() -> new CustomException(ExceptionCode.NOT_FOUND_USER));
     }
 
     private User findUserByAccount(String account) {

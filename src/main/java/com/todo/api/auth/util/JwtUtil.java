@@ -1,8 +1,6 @@
 package com.todo.api.auth.util;
 
 import com.todo.api.auth.dto.CustomUserInfoDto;
-import com.todo.api.common.exception.CustomException;
-import com.todo.api.common.exception.ExceptionCode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
@@ -24,18 +22,25 @@ public class JwtUtil {
 
     private final Key key;
     private final long accessTokenExpTime;
+    private final long refreshTokenExpTime;
 
     public JwtUtil(
         @Value("${jwt.secret}") String secretKey,
-        @Value("${jwt.expiration_time}") long accessTokenExpTime
+        @Value("${jwt.access_token_expiration_time}") long accessTokenExpTime,
+        @Value("${jwt.refresh_token_expiration_time}") long refreshTokenExpTime
     ) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         this.key = Keys.hmacShaKeyFor(keyBytes);
         this.accessTokenExpTime = accessTokenExpTime;
+        this.refreshTokenExpTime = refreshTokenExpTime;
     }
 
     public String createAccessToken(CustomUserInfoDto userInfoDto) {
         return createToken(userInfoDto, accessTokenExpTime);
+    }
+
+    public String createRefreshToken(CustomUserInfoDto userInfoDto) {
+        return createToken(userInfoDto, refreshTokenExpTime);
     }
 
     private String createToken(CustomUserInfoDto userInfoDto, long expireTime) {

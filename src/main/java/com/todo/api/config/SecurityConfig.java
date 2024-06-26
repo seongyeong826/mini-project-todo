@@ -56,6 +56,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers("/auth/sign-in").permitAll()
                 .requestMatchers("/auth/sign-up").permitAll()
+                .requestMatchers("/auth/refresh").permitAll()
                 .requestMatchers(PathRequest.toH2Console()).permitAll()
                 .anyRequest().permitAll()
             ).build();

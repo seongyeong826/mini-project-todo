@@ -1,5 +1,6 @@
 package com.todo.api.auth.controller;
 
+import com.todo.api.auth.request.RefreshRequest;
 import com.todo.api.auth.request.SignInRequest;
 import com.todo.api.auth.response.TokenResponse;
 import com.todo.api.auth.service.AuthService;
@@ -25,7 +26,10 @@ public class AuthController {
     }
 
     // 로그아웃 추가하기
-
-    // 엑세스 토큰 재발급 추가하기
+    @PostMapping("/refresh")
+    @Operation(summary = "토큰 재발급", description = "엑세스 토큰 재발급")
+    public Response<TokenResponse> refresh(@RequestBody RefreshRequest request) {
+        return Response.success(authService.refresh(request));
+    }
 
 }
